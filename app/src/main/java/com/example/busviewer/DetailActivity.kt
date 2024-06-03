@@ -2,9 +2,6 @@ package com.example.busviewer
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,8 +15,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var detailAdapter: DetailAdapter
     private val stopDetailsList = ArrayList<StopDetail>()
-    private lateinit var backgroundImg: ImageView
-    private lateinit var foregroundImg: ImageView
+    private val animationFragment = AnimationFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,12 +26,9 @@ class DetailActivity : AppCompatActivity() {
         detailAdapter = DetailAdapter(stopDetailsList)
         recyclerView.adapter = detailAdapter
 
-
-        val backgroundAnimation = AnimationUtils.loadAnimation(this, R.anim.animation)
-        backgroundImg = findViewById(R.id.backgroundImageView)
-        foregroundImg = findViewById(R.id.foregroundImageView)
-
-        backgroundImg.startAnimation(backgroundAnimation)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.loading_container, animationFragment)
+            .commit()
 
         val stopIds = intent.getStringArrayListExtra("stopIds")
         if (!stopIds.isNullOrEmpty()) {
@@ -43,9 +36,6 @@ class DetailActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "No stop IDs found", Toast.LENGTH_SHORT).show()
         }
-
-
-
     }
 
     private fun fetchStopDetails(stopIds: ArrayList<String>) {
@@ -83,9 +73,7 @@ class DetailActivity : AppCompatActivity() {
                     stopDetailsList.add(stopDetail)
 
                     detailAdapter.notifyDataSetChanged()
-                    backgroundImg.visibility = View.GONE
-                    foregroundImg.visibility = View.GONE
-                    backgroundImg.clearAnimation()
+                    animationFragment.stopAnimation()
 
                 },
                 { error ->
@@ -95,5 +83,6 @@ class DetailActivity : AppCompatActivity() {
             )
             volleyQueue.add(jsonObjectRequest)
         }
+
     }
 }

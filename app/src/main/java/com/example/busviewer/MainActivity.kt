@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: StopsAdapter
     private lateinit var db: FirebaseFirestore
     private lateinit var searchView: SearchView
+    private val animationFragment = AnimationFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -40,6 +41,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.loading_container, animationFragment)
+            .commit()
+
         main()
 
     }
@@ -55,6 +60,7 @@ class MainActivity : AppCompatActivity() {
                     stopList.add(Stop(name, ids))
                 }
                 adapter.setData(stopList)
+                animationFragment.stopAnimation()
             }
             .addOnFailureListener { exception ->
                 println("Error getting documents: $exception")

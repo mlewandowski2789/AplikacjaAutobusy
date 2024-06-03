@@ -2,22 +2,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/backgroundImageView"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/loading_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_launcher_background"
-        android:scaleType="fitXY"
-        android:contentDescription="TODO" />
-
-    <!-- Foreground ImageView -->
-    <ImageView
-        android:id="@+id/foregroundImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_launcher_foreground"
-        android:scaleType="fitXY"
-        android:contentDescription="TODO" />
+        android:layout_height="match_parent"/>
 
 
     <ScrollView
