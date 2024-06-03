@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "967671847112",
+    "project_id": "mobilki-21f6f",
+    "storage_bucket": "mobilki-21f6f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967671847112:android:bb5ea5f980f9f64691edfd",
+        "android_client_info": {
+          "package_name": "com.example.busviewer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU_zYVIjVUmJOVi9kji_Na3hYdEI2d3Yw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
