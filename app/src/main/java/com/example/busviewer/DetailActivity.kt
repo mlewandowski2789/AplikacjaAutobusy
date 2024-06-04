@@ -1,5 +1,7 @@
 package com.example.busviewer
 
+import android.icu.util.Calendar
+import android.icu.util.TimeZone
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -9,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class DetailActivity : AppCompatActivity() {
 
@@ -16,6 +20,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var detailAdapter: DetailAdapter
     private val stopDetailsList = ArrayList<StopDetail>()
     private val animationFragment = AnimationFragment()
+    private val rightNow = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +30,8 @@ class DetailActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         detailAdapter = DetailAdapter(stopDetailsList)
         recyclerView.adapter = detailAdapter
+
+        rightNow.timeZone = TimeZone.getTimeZone("CET");
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.loading_container, animationFragment)
@@ -40,6 +47,8 @@ class DetailActivity : AppCompatActivity() {
 
     private fun fetchStopDetails(stopIds: ArrayList<String>) {
         val volleyQueue = Volley.newRequestQueue(this)
+        val currentTime = rightNow.get(Calendar.HOUR_OF_DAY)*60 + rightNow.get(Calendar.MINUTE)
+        Log.d("currentTime", rightNow.get(Calendar.HOUR_OF_DAY).toString())
 
         stopIds.forEach { stopId ->
             val stopDataUrl = "https://www.poznan.pl/mim/komunikacja/service.html?stop_id=$stopId"
@@ -49,9 +58,8 @@ class DetailActivity : AppCompatActivity() {
                 stopDataUrl,
                 null,
                 { response ->
-                    Log.d("DetailActivity", response.toString())
-
                     val routesList = ArrayList<Line>()
+                    val headsigns:MutableSet<String> = mutableSetOf()
                     val routes = response.getJSONArray("routes")
                     for (i in 0 until routes.length()){
                         val route = routes.getJSONObject(i)
@@ -62,15 +70,26 @@ class DetailActivity : AppCompatActivity() {
                         val departuresList = ArrayList<String>()
                         for (j in 0 until departures.length()){
                             val departure = departures.getJSONObject(j)
-                            val time = departure.getString("hours")+":"+departure.getString("minutes")
-                            departuresList.add(time)
-                        }
+                            val departureTime = departure.getString("hours").toInt()*60 + departure.getString("minutes").toInt()
+                            Log.d("departureTime", departureTime.toString())
 
-                        val line = Line(name, headsign, departuresList)
-                        routesList.add(line)
+                            if(currentTime < departureTime && departureTime <= currentTime+60){
+                                val time = departure.getString("hours")+":"+departure.getString("minutes")
+                                departuresList.add(time)
+                            }
+
+                        }
+                        if(departuresList.size > 0){
+                            headsigns.add(headsign)
+                            val line = Line(name, headsign, departuresList)
+                            routesList.add(line)
+                        }
                     }
-                    val stopDetail = StopDetail(stopId, routesList)
-                    stopDetailsList.add(stopDetail)
+                    if(routesList.size > 0){
+                        val stopDetail = StopDetail(stopId, routesList, headsigns)
+                        stopDetailsList.add(stopDetail)
+                    }
+
 
                     detailAdapter.notifyDataSetChanged()
                     animationFragment.stopAnimation()
@@ -86,3 +105,4 @@ class DetailActivity : AppCompatActivity() {
 
     }
 }
+

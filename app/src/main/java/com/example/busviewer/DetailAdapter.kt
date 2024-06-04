@@ -23,7 +23,7 @@ class DetailAdapter(private val stopDetails: List<StopDetail>) :
 
     override fun onBindViewHolder(holder: StopDetailViewHolder, position: Int) {
         val currentStopDetail = stopDetails[position]
-        holder.stopIdTextView.text = "Stop ID: ${currentStopDetail.stopId}"
+        holder.stopIdTextView.text = "Kierunek: ${currentStopDetail.headsigns}"
 
         holder.linesRecyclerView.layoutManager = LinearLayoutManager(holder.linesRecyclerView.context)
         holder.linesRecyclerView.adapter = LineAdapter(currentStopDetail.lines)
